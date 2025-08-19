@@ -2,12 +2,12 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Pixel Runner — Pixel Art Edition (Star Mode + Refined Audio + Fewer Lives)</title>
   <style>
     :root{ --bg:#0b1020;--fg:#e6f1ff;--accent:#66e0ff;--good:#9cff57;--bad:#ff5470;--muted:#9aa6b2;--panel:#121a33;--gold:#ffd166 }
     html,body{height:100%;margin:0;background:linear-gradient(180deg,#0a0f1f 0%,#0b1020 100%);font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:var(--fg)}
-    .wrap{display:grid;place-items:center;height:100%;padding:1rem;box-sizing:border-box}
+    .wrap{display:grid;place-items:center;min-height:100vh;min-height:100dvh;padding:120px 1rem 1rem;box-sizing:border-box}
     canvas#game{background:radial-gradient(1200px 800px at 50% 20%, #101a36 0%, #0b1020 60%, #090e1b 100%);border:1px solid #1c2855;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.45);max-width:100%;height:auto}
     .logo-top-wrap{ position:fixed; top:48px; left:50%; transform:translateX(-50%); width:min(900px, 94vw); pointer-events:none; z-index:5; display:flex; justify-content:center; }
     canvas#logoTop{ width:100%; height:80px; image-rendering:pixelated; }
@@ -46,6 +46,19 @@
     .legend-inline .item{ display:flex; align-items:center; gap:10px; padding:8px; border:1px solid #223060; border-radius:10px; background:#0f1732 }
     .legend-inline .item canvas{ width:34px; height:34px; image-rendering:pixelated; border-radius:6px; background:#0c132a }
     .popup-layer{ position:fixed; pointer-events:none; inset:0; z-index:6 }
+    /* On-screen touch controls */
+    .touch-controls{ display:none; position:fixed; inset:0; z-index:20; pointer-events:none; }
+    .touch-controls .dpad{ position:absolute; bottom:20px; left:20px; display:grid; grid-template-columns:repeat(3,60px); grid-template-rows:repeat(3,60px); gap:8px; }
+    .touch-controls .dpad button{ width:60px; height:60px; font-size:24px; border-radius:12px; border:1px solid #233160; background:rgba(18,26,51,.8); color:var(--fg); pointer-events:auto; }
+    .touch-controls .actions{ position:absolute; bottom:20px; right:20px; display:flex; flex-direction:column; gap:12px; }
+    .touch-controls .actions button{ width:72px; height:72px; border-radius:50%; font-weight:600; font-size:.9rem; border:1px solid #233160; background:linear-gradient(180deg,#67e8f9,#22d3ee); color:#00111a; pointer-events:auto; }
+    @media (pointer:coarse){ .touch-controls{ display:block; } }
+
+    @media (max-width:1024px){
+      .logo-top-wrap{ position:relative; top:auto; left:auto; transform:none; width:100%; margin:12px auto; }
+      .wrap{ padding-top:1rem; }
+      .legend{ display:none; }
+    }
   </style>
 </head>
 <body>
@@ -83,6 +96,18 @@
     <div class="sep"></div>
     <small>Tip: Dashing (<span class="kbd">Shift</span>) gives speed bursts.</small>
   </aside>
+
+  <div id="touchControls" class="touch-controls" aria-hidden="true">
+    <div class="dpad">
+      <div></div><button data-key="up">▲</button><div></div>
+      <button data-key="left">◀</button><button data-key="down">▼</button><button data-key="right">▶</button>
+      <div></div><div></div><div></div>
+    </div>
+    <div class="actions">
+      <button data-key="dash">Dash</button>
+      <button data-key="bomb">Bomb</button>
+    </div>
+  </div>
 
   <div id="overlay" class="overlay" aria-hidden="true">
     <div id="pauseCard" class="card" hidden>
@@ -331,6 +356,22 @@
   const keys=new Set(); function readInput(){ let x=0,y=0; if(keys.has('arrowleft')||keys.has('a'))x--; if(keys.has('arrowright')||keys.has('d'))x++; if(keys.has('arrowup')||keys.has('w'))y--; if(keys.has('arrowdown')||keys.has('s'))y++; return {x,y,dash:keys.has('shift')}; }
   addEventListener('keydown',e=>{ if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight',' '].includes(e.key)) e.preventDefault(); keys.add(e.key.toLowerCase()); if(intro.active){ ensureAudio(); startGameFromIntro(); return; } if(e.key.toLowerCase()==='p'){ if(state.running){ state.paused=!state.paused; setOverlay(state.paused?'pause':null);} } if(e.key.toLowerCase()==='r'){ if(!state.running||state.paused||state.gameover){ reset(); } } if(e.key===' ' && state.running && state.bombs>0){ detonateBomb(state.player.x,state.player.y); } });
   addEventListener('keyup',e=>keys.delete(e.key.toLowerCase()));
+
+  // Touch controls
+  const touchControls=document.getElementById('touchControls');
+  if('ontouchstart' in window || navigator.maxTouchPoints>0){
+    touchControls.removeAttribute('aria-hidden');
+    const map={up:'arrowup',down:'arrowdown',left:'arrowleft',right:'arrowright',dash:'shift'};
+    touchControls.querySelectorAll('button').forEach(btn=>{
+      const key=btn.dataset.key;
+      const k=map[key];
+      const press=e=>{ e.preventDefault(); if(key==='bomb'){ if(state.running && state.bombs>0) detonateBomb(state.player.x,state.player.y); return; } keys.add(k); };
+      const release=e=>{ e && e.preventDefault(); if(key==='bomb') return; keys.delete(k); };
+      btn.addEventListener('touchstart',press);
+      btn.addEventListener('touchend',release);
+      btn.addEventListener('touchcancel',release);
+    });
+  }
 
   // Buttons
   startBtn.addEventListener('click',()=>{ ensureAudio(); if(intro.active){ startGameFromIntro(); } else if(!state.running){ reset(); } });

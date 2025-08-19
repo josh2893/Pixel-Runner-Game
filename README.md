@@ -11,9 +11,9 @@ Pixel Runner is a fast-paced HTML5 arcade game where you guide a living pixel co
 ## 🎮 Gameplay
 
 ### Controls and Mechanics
-- **Run & Dash** – Move freely across the playfield using WASD or Arrow Keys. Hit Shift to dash, slipping past spikes or diving for pickups.
+- **Run & Dash** – Move freely across the playfield using WASD or Arrow Keys. Hit Shift to dash, slipping past spikes or diving for pickups. On touch devices, use the on‑screen D‑pad and **Dash** button.
 - **Orbs & Combos** – Collect Pixel Orbs to earn points and build up a score multiplier. Chain orbs quickly to climb your combo all the way to x5.
-- **Bombs** – Gather Bomb Pickups and detonate them with Space to wipe out incoming spikes in a glorious pixel explosion.
+- **Bombs** – Gather Bomb Pickups and detonate them with Space or the on‑screen **Bomb** button to wipe out incoming spikes in a glorious pixel explosion.
 - **Lives** – Grab rare glowing Heart Pixels to recover lost lives (capped at 5).
 - **Star Mode** – Snag a rainbow Star Orb to enter a brief state of cosmic invincibility. While active, you move faster, leave a rainbow trail, and zap spikes just by touching them.
 

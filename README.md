@@ -33,4 +33,4 @@ In the Neon Drift, pixels aren’t just data — they’re citizens. You are a R
 
 ## 🔗 Links
 
-https://josh2893.github.io/Pixel-Runner-Game/pixel_runner_landing.html
+[▶ Play Pixel Runner (Landing)](https://josh2893.github.io/Pixel-Runner-Game/pixel_runner_landing.html)

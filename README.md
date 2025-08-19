@@ -31,3 +31,6 @@ In the Neon Drift, pixels aren’t just data — they’re citizens. You are a R
 
 ⚡️ Pixel Runner is about rhythm, reflex, and flow. Survive longer, chase higher scores, and ride the wave of pixels as the Drift fights back.
 
+## 🔗 Links
+
+https://josh2893.github.io/Pixel-Runner-Game/pixel_runner_landing.html
